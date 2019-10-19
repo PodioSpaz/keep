@@ -1,3 +1,4 @@
 click
 requests
-tabulate
+terminaltables
+PyGithub==1.43.7

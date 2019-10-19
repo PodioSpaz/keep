@@ -30,15 +30,18 @@ cmd_folder = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                           'commands'))
 pass_context = click.make_pass_decorator(Context, ensure=True)
 
+
 class KeepCLI(click.MultiCommand):
 
-    def list_commands(self, ctx):
+    def pre_process(self, ctx):
         dir_path = os.path.join(os.path.expanduser('~'), '.keep')
         if not os.path.exists(dir_path):
             utils.first_time_use(ctx)
         else:
-            utils.check_update()
+            utils.check_update(ctx)
 
+    def list_commands(self, ctx):
+        self.pre_process(ctx)
         rv = []
         for filename in os.listdir(cmd_folder):
             if filename.endswith('.py') and \
@@ -48,6 +51,7 @@ class KeepCLI(click.MultiCommand):
         return rv
 
     def get_command(self, ctx, name):
+        self.pre_process(ctx)
         try:
             if sys.version_info[0] == 2:
                 name = name.encode('ascii', 'replace')
@@ -66,6 +70,6 @@ def cli(ctx, verbose):
     """
     Keep and view shell commands in terminal only.
 
-    Read more at https://orkohunter.net/keep
+    Read more at https://github.com/orkohunter/keep
     """
     ctx.verbose = verbose
